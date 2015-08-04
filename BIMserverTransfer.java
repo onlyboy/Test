@@ -101,6 +101,27 @@ public class BIMserverTransfer {
 		}
 		return rowkey;
 	}
+		/**
+	 * 
+	 * 将表名做MD5处理后和原来的键合并成为新的键
+	 * 
+	 */
+	public byte[] mkRowKey(String tableName, byte[] originKey) {
+		MessageDigest d;
+		byte[] rowkey = null;
+		try {
+			d = MessageDigest.getInstance("MD5");
+			byte[] ahash = d.digest(Bytes.toBytes(tableName));
+			int length=originKey.length;
+			rowkey = new byte[16+length];
+			int offset = 0;
+			offset = Bytes.putBytes(rowkey, offset, ahash, 0, 16);
+			Bytes.putBytes(rowkey, offset, originKey, 0, length);
+		} catch (NoSuchAlgorithmException e) {
+			throw new RuntimeException("MD5 algorithm not available!", e);
+		}
+		return rowkey;
+	}
 	/**
 	 * 
 	 * 将byte数组的flag和原来的键合并成为新的键
